@@ -110,6 +110,9 @@ gap or a broken image.
 </figure>
 ```
 
+For two figures side by side, wrap them in `<div class="media-pair">` — the benchmarking
+card does this. The pair sits two-up above 560px and stacks below it.
+
 A video or GIF works in the same slot — swap `<img>` for
 `<video src="…" poster="…" controls muted loop playsinline>`. Always set `width` and
 `height` so the page doesn't jump while the file loads, and write real `alt` text
@@ -128,8 +131,11 @@ still under review. Confirm before adding anything beyond the current text:
 
 - **The ICRA submission is under review.** The resume-level description here (benchmarking
   pipeline, simulation scenarios, comparison against prior work) matches what is already on
-  a circulated resume. Novel method details and unpublished figures are the part to clear
-  with the PI or T. Qin first.
+  a circulated resume. The two figures on that card are training-run visualisations of the
+  2D and 3D benchmark scenarios, published deliberately — if the PI or T. Qin would rather
+  nothing from the submission were public before review closes, delete the `media-pair`
+  block from `#project-benchmarking` and the two files in `assets/img/`. Method details and
+  result figures from the paper itself are a separate question and still need clearing.
 - **The Spot project** may be subject to lab policy on photos and video of the hardware,
   especially given the accessibility application. Ask before posting footage.
 - **Repos.** Confirm whether the lab repos can be linked publicly at all.

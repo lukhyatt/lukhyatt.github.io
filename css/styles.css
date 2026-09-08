@@ -202,8 +202,7 @@ a:hover { text-decoration-thickness: 2px; }
 
   /* major tick — the name and each section title */
   .hero__name::before,
-  .section__title::before,
-  .footer__title::before {
+  .section__title::before {
     content: "";
     position: absolute;
     left: calc(-1 * var(--gutter) - 5px);
@@ -212,8 +211,19 @@ a:hover { text-decoration-thickness: 2px; }
     height: 9px;
     background: var(--ink);
   }
-  .hero__name, .section__title, .footer__title { position: relative; }
+  .hero__name, .section__title { position: relative; }
   .hero__name::before { top: 0.42em; }
+
+  /* the axis closes with a final tick at the foot of the page */
+  .site-footer .wrap__body::after {
+    content: "";
+    position: absolute;
+    left: -5px;   /* centred on the axis, which is this box's own left border */
+    bottom: 0;
+    width: 9px;
+    height: 9px;
+    background: var(--ink);
+  }
 
   /* minor tick — one hollow node per entry */
   .entry { position: relative; }
@@ -401,6 +411,17 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .entry--lead .entry__media { margin-top: 1.5rem; }
 
+/* two figures side by side, stacked on narrow screens */
+.media-pair {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.media-pair .entry__media { margin: 0; }
+@media (min-width: 560px) {
+  .media-pair { grid-template-columns: 1fr 1fr; }
+}
+
 /* ----------------------------------- tags ---------------------------------- */
 .tags {
   display: flex;
@@ -436,15 +457,11 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 /* ---------------------------------- footer --------------------------------- */
-.site-footer .wrap__body { border-top: 0; }
-.footer__title {
-  margin: 0 0 1.75rem;
-  font-size: var(--step-2);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.site-footer .wrap__body {
+  position: relative;
+  padding-block: 2.75rem;
 }
 .footer__colophon {
-  margin-top: 2rem;
   font-size: var(--step--1);
   color: var(--muted);
 }
@@ -455,8 +472,7 @@ a:hover { text-decoration-thickness: 2px; }
   .wrap { grid-template-columns: 1fr; }
   .wrap__rail { display: none; }
 
-  .section__title::before,
-  .footer__title::before {
+  .section__title::before {
     content: "";
     display: inline-block;
     width: 8px;

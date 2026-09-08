@@ -47,7 +47,6 @@
         <li><a href="#projects">Projects</a></li>
         <li><a href="#education">Education</a></li>
         <li><a href="#skills">Skills</a></li>
-        <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
   </div>
@@ -226,12 +225,20 @@
           </div>
           <p class="entry__meta"><span class="entry__org">UNC Computational Robotics Lab</span></p>
 
-          <!-- Media slot. Uncomment once figure release is cleared with the PI.
-          <figure class="entry__media">
-            <img src="assets/img/benchmarking.png" alt="" width="1200" height="750">
-            <figcaption>Head-to-head results across evaluation scenarios.</figcaption>
-          </figure>
-          -->
+          <div class="media-pair">
+            <figure class="entry__media">
+              <img src="assets/img/planner-benchmark-2d.webp" width="800" height="801"
+                   loading="lazy" decoding="async"
+                   alt="Two-dimensional benchmark scenario: a search tree of green nodes expands from the blue start marker across a unit square of circular obstacle regions toward the goal, marked with a star.">
+              <figcaption>2D scenario: the search tree expanding from start to goal around circular obstacle regions.</figcaption>
+            </figure>
+            <figure class="entry__media">
+              <img src="assets/img/planner-benchmark-3d.webp" width="800" height="798"
+                   loading="lazy" decoding="async"
+                   alt="Three-dimensional benchmark scenario: a search tree spanning a unit cube of spherical obstacles between the start marker and the goal star.">
+              <figcaption>3D scenario: the same benchmark with spherical obstacles.</figcaption>
+            </figure>
+          </div>
 
           <ul class="entry__bullets">
             <li>Built the benchmarking pipeline that compared the proposed model against prior work across all evaluation scenarios, producing the head-to-head results reported in a paper under review at ICRA 2027</li>
@@ -380,29 +387,10 @@
 </main>
 
 <!-- =========================== FOOTER ============================ -->
-<footer class="site-footer" id="contact">
+<footer class="site-footer">
   <div class="wrap">
     <div class="wrap__rail" aria-hidden="true"></div>
     <div class="wrap__body">
-      <h2 class="footer__title">Get in touch</h2>
-      <ul class="contacts contacts--footer">
-        <li class="contacts__row">
-          <span class="contacts__label">Email</span>
-          <a href="mailto:lukhyatt@unc.edu">lukhyatt@unc.edu</a>
-        </li>
-        <li class="contacts__row">
-          <span class="contacts__label">GitHub</span>
-          <a href="https://github.com/lukhyatt" rel="me noopener">github.com/lukhyatt</a>
-        </li>
-        <li class="contacts__row">
-          <span class="contacts__label">LinkedIn</span>
-          <a href="https://www.linkedin.com/in/luke-hyatt-49a168288" rel="me noopener">linkedin.com/in/luke-hyatt-49a168288</a>
-        </li>
-        <li class="contacts__row">
-          <span class="contacts__label">Resume</span>
-          <a href="assets/luke-hyatt-resume.pdf">luke-hyatt-resume.pdf</a>
-        </li>
-      </ul>
       <p class="footer__colophon">Built from scratch with HTML, CSS, and a little JavaScript.</p>
     </div>
   </div>
