@@ -99,7 +99,7 @@ Tech tags:
 
 ### Images and video
 
-Every card has a commented-out media slot. Uncomment it and drop the file in
+Cards without media keep a commented-out slot. Uncomment it and drop the file in
 `assets/img/`. An empty slot renders nothing at all, so a card without media is not a
 gap or a broken image.
 
