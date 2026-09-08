@@ -1,0 +1,552 @@
+/* ==========================================================================
+   Luke Hyatt — portfolio
+   --------------------------------------------------------------------------
+   DESIGN NOTES
+
+   Concept: "the axis". The work on this site is navigation graphs and
+   benchmarking plots, so the page is built like an instrument reading: a
+   single hairline axis runs the full height of the content, section headings
+   sit on it as filled ticks, and every entry hangs off it as a hollow node —
+   a waypoint graph read top to bottom.
+
+   Principles
+     1. Measured, not decorative. Every rule, tick and indent lands on the
+        same axis; nothing is placed for texture.
+     2. Density where it earns it. Content blocks are tight and scannable,
+        separated by large silence.
+     3. One accent, used only for navigation and signal — links and the
+        current section. Never ornament.
+     4. No lift. Entries are defined by rules, nodes and space, not by
+        boxes, shadows or rounded corners. Corner radius is 0 everywhere.
+
+   Type
+     Archivo 600/700       — the name and section titles. Wide grotesque,
+                             holds its shape at display sizes.
+     IBM Plex Sans 400/500/600 — everything else. Humanist, engineering
+                             lineage, distinct from Archivo in proportion.
+   ========================================================================== */
+
+/* ---------------------------------- tokens -------------------------------- */
+:root {
+  /* colour — six values, no more */
+  --paper:   #f3f4f1;   /* page ground: drafting paper, cool green-grey cast */
+  --surface: #fbfbfa;   /* raised-neutral for media frames and the nav panel */
+  --ink:     #12161c;   /* headings, the name, filled ticks */
+  --body:    #3c4550;   /* body copy — 8.4:1 on --paper */
+  --muted:   #5c6673;   /* labels, dates, locations — 5.1:1 on --paper */
+  --rule:    #d5d9d2;   /* hairlines and the axis */
+  --node:    #98a0a6;   /* hollow node outlines */
+  --accent:  #0057b8;   /* links and the current section — 6.2:1 on --paper */
+
+  /* type */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  --step--1: 0.8125rem;   /* labels, dates, tags */
+  --step-0:  1.0625rem;   /* body */
+  --step-1:  1.1875rem;   /* entry names */
+  --step-2:  clamp(1.55rem, 3.6vw, 2rem);      /* section titles */
+  --step-3:  clamp(2.6rem, 9vw, 4.5rem);       /* the name */
+
+  /* layout */
+  --rail: 0rem;           /* axis gutter — widened at >=760px */
+  --gutter: 0rem;         /* space between the axis and the text */
+  --pad-y: clamp(2.75rem, 6vw, 4.25rem);
+  --measure: 40rem;       /* body copy tops out around 78 characters */
+  --measure-narrow: 36rem;
+  --masthead-h: 3.5rem;
+}
+
+/* ----------------------------------- base --------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--masthead-h) + 1.5rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--body);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: var(--font-display); color: var(--ink); line-height: 1.12; }
+p { margin: 0; }
+ul, ol, dl, dd { margin: 0; padding: 0; }
+li { list-style: none; }
+cite { font-style: italic; }
+img, video { max-width: 100%; }
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  font-size: var(--step--1);
+  font-weight: 500;
+}
+.skip-link:focus { top: 0.75rem; }
+
+/* --------------------------------- masthead ------------------------------- */
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--paper);
+  border-bottom: 1px solid transparent;
+}
+.masthead.is-scrolled { border-bottom-color: var(--rule); }
+
+.masthead__inner {
+  width: min(100% - 2.5rem, 900px);
+  margin-inline: auto;
+  min-height: var(--masthead-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.wordmark__mark {
+  width: 9px;
+  height: 9px;
+  background: var(--ink);
+}
+
+.nav__list { display: flex; gap: 1.4rem; }
+.nav__list a {
+  position: relative;
+  display: inline-block;
+  padding: 0.35rem 0;
+  color: var(--muted);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+}
+.nav__list a:hover { color: var(--ink); }
+.nav__list a[aria-current="true"] { color: var(--ink); }
+.nav__list a[aria-current="true"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  background: var(--accent);
+}
+
+.nav-toggle { display: none; }
+
+/* ------------------------------ layout: the axis --------------------------- */
+.wrap {
+  width: min(100% - 2.5rem, 900px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: var(--rail) 1fr;
+}
+
+.wrap__rail { padding-top: var(--pad-y); }
+.rail__num {
+  display: block;
+  padding-top: 0.5rem;
+  padding-right: 0.9rem;
+  text-align: right;
+  font-size: var(--step--1);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--node);
+}
+
+.wrap__body {
+  min-width: 0;
+  padding-block: var(--pad-y);
+  padding-left: var(--gutter);
+}
+
+/* the axis itself and its ticks only exist once there is a gutter to hold them */
+@media (min-width: 760px) {
+  :root { --rail: 3.5rem; --gutter: 2rem; }
+
+  .wrap__body { border-left: 1px solid var(--rule); }
+
+  /* major tick — the name and each section title */
+  .hero__name::before,
+  .section__title::before,
+  .footer__title::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--gutter) - 5px);
+    top: 0.62em;
+    width: 9px;
+    height: 9px;
+    background: var(--ink);
+  }
+  .hero__name, .section__title, .footer__title { position: relative; }
+  .hero__name::before { top: 0.42em; }
+
+  /* minor tick — one hollow node per entry */
+  .entry { position: relative; }
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--gutter) - 4.5px);
+    top: 0.6rem;
+    width: 7px;
+    height: 7px;
+    background: var(--paper);
+    border: 1px solid var(--node);
+  }
+}
+
+@media (min-width: 1000px) {
+  :root { --rail: 5.5rem; --gutter: 2.25rem; }
+}
+
+/* ----------------------------------- hero --------------------------------- */
+.section--hero .wrap__body { padding-top: clamp(3.5rem, 9vw, 6rem); }
+
+.hero__name {
+  margin: 0;
+  font-size: var(--step-3);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.hero__line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  margin-top: 1.1rem;
+  color: var(--ink);
+  font-size: var(--step-1);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.hero__line-div {
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  background: var(--node);
+}
+
+.hero__intro {
+  max-width: var(--measure-narrow);
+  margin-top: 1.6rem;
+}
+
+/* --------------------------------- contacts -------------------------------- */
+.contacts {
+  margin-top: 2.25rem;
+  max-width: 34rem;
+  border-top: 1px solid var(--rule);
+}
+.contacts__row {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.contacts__label {
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--muted);
+}
+.contacts__row a {
+  font-size: var(--step-0);
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------- sections -------------------------------- */
+.section__title {
+  margin: 0 0 2.25rem;
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ---------------------------------- entries -------------------------------- */
+.entry + .entry {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--rule);
+}
+@media (min-width: 760px) {
+  .entry + .entry::before { top: 3.1rem; }
+}
+
+.entry__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 1.5rem;
+}
+.entry__name {
+  margin: 0;
+  font-size: var(--step-1);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.entry__dates {
+  flex: none;
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin-top: 0.3rem;
+  font-size: var(--step--1);
+}
+.entry__org { color: var(--body); font-weight: 500; }
+.entry__loc { color: var(--muted); }
+
+.entry__bullets { margin-top: 1rem; display: grid; gap: 0.55rem; }
+.entry__bullets > li {
+  position: relative;
+  padding-left: 1.15rem;
+  max-width: var(--measure);
+}
+.entry__bullets > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.82em;
+  width: 0.6rem;
+  height: 1px;
+  background: var(--node);
+}
+
+/* the publication line: set apart from the bullets, not lost among them */
+.entry__pub {
+  display: grid;
+  gap: 0.1rem;
+  max-width: var(--measure-narrow);
+  margin-top: 1.15rem;
+  padding-left: 0.95rem;
+  border-left: 2px solid var(--ink);
+}
+.entry__pub-label {
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink);
+}
+.entry__pub cite { color: var(--ink); }
+.entry__pub-venue { font-size: var(--step--1); color: var(--muted); }
+
+.entry__handoff { margin-top: 0.9rem; font-size: var(--step--1); }
+
+.entry__sublabel {
+  margin-top: 1.25rem;
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--muted);
+}
+.entry__sublabel + .tags { margin-top: 0.55rem; }
+
+.entry__repo { margin-top: 0.9rem; font-size: var(--step--1); }
+
+/* media slot — absent by default, correct when filled */
+.entry__media {
+  margin: 1.25rem 0 0;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+}
+.entry__media img,
+.entry__media video { display: block; width: 100%; height: auto; }
+.entry__media figcaption {
+  padding: 0.55rem 0.75rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+.entry--lead .entry__media { margin-top: 1.5rem; }
+
+/* ----------------------------------- tags ---------------------------------- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.1rem;
+}
+.tags > li {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--rule);
+  font-size: var(--step--1);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------------------------------- skills --------------------------------- */
+.skills {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  border-top: 1px solid var(--rule);
+}
+.skills dt {
+  padding: 0.7rem 1rem 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--muted);
+}
+.skills dd {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--step-0);
+}
+
+/* ---------------------------------- footer --------------------------------- */
+.site-footer .wrap__body { border-top: 0; }
+.footer__title {
+  margin: 0 0 1.75rem;
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.footer__colophon {
+  margin-top: 2rem;
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* ================================ responsive =============================== */
+@media (max-width: 759px) {
+  /* No axis at this width: the rail collapses and the ticks move inline. */
+  .wrap { grid-template-columns: 1fr; }
+  .wrap__rail { display: none; }
+
+  .section__title::before,
+  .footer__title::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 0.6rem;
+    vertical-align: 0.06em;
+    background: var(--ink);
+  }
+
+  .hero__line { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .hero__line-div { display: none; }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    margin-right: -0.6rem;
+    background: none;
+    border: 0;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: var(--step--1);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .nav-toggle__bars,
+  .nav-toggle__bars::before,
+  .nav-toggle__bars::after {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--ink);
+  }
+  .nav-toggle__bars {
+    position: relative;
+  }
+  .nav-toggle__bars::before,
+  .nav-toggle__bars::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .nav-toggle__bars::before { top: -5px; }
+  .nav-toggle__bars::after { top: 5px; }
+  .nav-toggle[aria-expanded="true"] .nav-toggle__bars { background: transparent; }
+  .nav-toggle[aria-expanded="true"] .nav-toggle__bars::before { top: 0; transform: rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] .nav-toggle__bars::after { top: 0; transform: rotate(-45deg); }
+
+  .nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: none;
+    background: var(--surface);
+    border-block: 1px solid var(--rule);
+  }
+  .nav.is-open { display: block; }
+  .nav__list {
+    flex-direction: column;
+    gap: 0;
+    width: min(100% - 2.5rem, 900px);
+    margin-inline: auto;
+  }
+  .nav__list li + li { border-top: 1px solid var(--rule); }
+  .nav__list a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: var(--step-0);
+  }
+  .nav__list a[aria-current="true"]::before {
+    left: -0.85rem;
+    top: 50%;
+    bottom: auto;
+    margin: -3px 0 0;
+  }
+
+  .entry__dates { width: 100%; }
+  .contacts__row { grid-template-columns: 1fr; gap: 0.1rem; }
+  .skills { grid-template-columns: 1fr; }
+  .skills dt { padding-bottom: 0.1rem; border-bottom: 0; }
+  .skills dd { padding-top: 0.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
