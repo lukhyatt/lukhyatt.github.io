@@ -257,8 +257,8 @@ a:hover { text-decoration-thickness: 2px; }
 .hero__id { min-width: 0; }
 .hero__portrait {
   flex: none;
-  width: 132px;
-  height: 132px;
+  width: 164px;
+  height: 164px;
   object-fit: cover;
   border: 1px solid var(--rule);
   background: var(--surface);
@@ -501,7 +501,7 @@ a:hover { text-decoration-thickness: 2px; }
   }
 
   .hero__top { flex-direction: column; gap: 1.25rem; }
-  .hero__portrait { width: 104px; height: 104px; }
+  .hero__portrait { width: 128px; height: 128px; }
   .hero__line { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
   .hero__line-div { display: none; }
 
